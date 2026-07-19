@@ -1,9 +1,9 @@
 import AuthCard from "../components/AuthCard";
 import { AuthHeader } from "../components/AuthHeader";
-import { LoginForm } from "../components/LoginForm";
+import { RegisterForm } from "../components/RegisterForm";
 import { AuthFooter } from "../components/AuthFooter";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center bg-[#0B0A0F] px-4 py-12 overflow-hidden">
       {/* Background Decorative Glows */}
@@ -17,14 +17,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         <AuthCard>
           <div className="flex flex-col space-y-6">
-            {/* Dynamic AuthHeader */}
+            {/* Dynamic Header */}
             <AuthHeader 
-              title="Welcome Back 👋" 
-              subtitle="Sign in to continue" 
+              title="Create your account" 
+              subtitle="Start using KnowledgeHub AI" 
             />
             
             {/* Form */}
-            <LoginForm />
+            <RegisterForm />
             
             {/* Divider */}
             <div className="relative flex items-center">
