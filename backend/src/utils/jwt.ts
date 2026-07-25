@@ -1,14 +1,12 @@
 import jwt from "jsonwebtoken";
 
-interface JwtPayload {
+export interface JwtPayload {
     id: string;
     email: string;
     role: string;
 }
 
-export function generateToken(
-    payload: JwtPayload
-) {
+export function generateToken(payload: JwtPayload): string {
     return jwt.sign(
         payload,
         process.env.JWT_SECRET! as string,
@@ -16,4 +14,11 @@ export function generateToken(
             expiresIn: process.env.JWT_EXPIRES_IN as string,
         } as any
     );
+}
+
+export function verifyToken(token: string): JwtPayload {
+    return jwt.verify(
+        token,
+        process.env.JWT_SECRET! as string
+    ) as JwtPayload;
 }

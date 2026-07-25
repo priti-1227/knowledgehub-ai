@@ -12,11 +12,52 @@ enum Role {
 }
 
 model User {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  role      Role @default(EMPLOYEE)
+
+  documents Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Department {
   id          String   @id @default(cuid())
-  fullName    String
-  email       String   @unique
-  password    String
-  role        Role     @default(EMPLOYEE)
+  name        String   @unique
+  description String?
+
+  documents   Document[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id String @id @default(cuid())
+
+  title String
+
+  originalName String
+  fileName String
+  filePath String
+
+  mimeType String
+  fileSize Int
+
+  version Int @default(1)
+
+  isProcessed Boolean @default(false)
+
+  uploadedById String
+  departmentId String
+
+  uploadedBy User       @relation(fields: [uploadedById], references: [id])
+
+  department Department @relation(fields: [departmentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
