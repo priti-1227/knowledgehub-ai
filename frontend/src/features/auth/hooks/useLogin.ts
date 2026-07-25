@@ -3,22 +3,22 @@ import { useNavigate } from "react-router-dom";
 import type { LoginInput } from "../schemas/login.schema";
 import { authApi } from "../services/auth.api";
 import type { User } from "../services/auth.api";
+import { useAuth } from "@/hooks/useAuth";
 
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
   const login = async (data: LoginInput) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await authApi.login(data);
-      
-      // Save auth details to local storage (or your state management)
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      
+
+      authLogin(response.token, response.user);
+
       // Navigate to dashboard after successful login
       navigate("/dashboard");
     } catch (err: any) {

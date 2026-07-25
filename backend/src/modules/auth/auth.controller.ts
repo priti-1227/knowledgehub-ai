@@ -3,14 +3,13 @@ import type {
     Response,
 } from "express";
 
-import { registerSchema } from "./auth.validation.js";
-import { registerUser } from "./auth.service.js";
+import { asyncHandler } from "@/utils/asyncHandler.js";
+import { loginSchema, registerSchema } from "./auth.validation.js";
+import { loginUser, registerUser } from "./auth.service.js";
 
-export async function register(
-    req: Request,
-    res: Response
-) {
-    try {
+export const register =
+    asyncHandler(async (req: Request, res: Response) => {
+
         const data =
             registerSchema.parse(req.body);
 
@@ -21,10 +20,21 @@ export async function register(
             success: true,
             user,
         });
-    } catch (error: any) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
+
+    });
+
+export const login =
+    asyncHandler(async (req: Request, res: Response) => {
+
+        const data = loginSchema.parse(req.body);
+
+        const result =
+            await loginUser(data);
+
+        res.status(200).json({
+            success: true,
+            user: result.user,
+            token: result.token,
         });
-    }
-}
+
+    });
