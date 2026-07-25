@@ -11,7 +11,10 @@
     "skipLibCheck": true,
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "src"

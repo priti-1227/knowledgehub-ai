@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import authRoutes from "@/modules/auth/auth.routes.js";
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get("/api/health", (_, res) => {
         message: "KnowledgeHub API is running 🚀",
     });
 });
+app.use("/api/auth", authRoutes);
 
 export default app;

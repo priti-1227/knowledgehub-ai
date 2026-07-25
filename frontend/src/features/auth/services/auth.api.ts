@@ -1,5 +1,6 @@
+import { API_BASE_URL } from "@/config/api";
 import type { LoginInput } from "../schemas/login.schema";
-import type { RegisterInput } from "../schemas/register.schema";
+import type { RegisterRequest } from "../types/auth.types";
 
 export interface User {
   id: string;
@@ -51,24 +52,25 @@ export const authApi = {
     };
   },
 
-  register: async (data: RegisterInput): Promise<LoginResponse> => {
-    // Simulate network latency
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  register: async (data: RegisterRequest) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
-    // Mock verification
-    if (data.email.includes("error")) {
-      throw new Error("Email is already registered");
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message);
     }
 
-    return {
-      user: {
-        id: Math.random().toString(36).substring(2, 9),
-        email: data.email,
-        name: data.fullName,
-        role: "user",
-      },
-      token: "mock-jwt-token-reg-" + Math.random().toString(36).substring(2, 9),
-    };
+    return result;
   },
 
   logout: async (): Promise<void> => {
