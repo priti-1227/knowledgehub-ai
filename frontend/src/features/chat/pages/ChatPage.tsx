@@ -1,5 +1,7 @@
-export function ChatPage() {
+export default function ChatPage() {
     return (
-        <div>ChatPage</div>
+        <h1 className="text-3xl font-bold">
+            AI Assistant
+        </h1>
     );
 }
