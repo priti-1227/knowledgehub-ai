@@ -1,50 +1,80 @@
 import { Request, Response } from "express";
+import path from "path";
+import { deleteDocumentService, getDocumentService, getDocumentsService, uploadDocumentService } from "./document.service.js";
 
-import {
-    uploadDocumentSchema,
-} from "./document.validation.js";
-
-import {
-    uploadDocumentService,
-} from "./document.service.js";
-
-export async function uploadDocument(
+export async function uploadDocumentController(
     req: Request,
     res: Response
 ) {
-
-    if (!req.file) {
-        return res.status(400).json({
-            success: false,
-            message: "PDF file is required",
-        });
-    }
-
-    const validated =
-        uploadDocumentSchema.parse(req.body);
-
-    // JWT middleware should attach the user
-    const user = req.user as any;
-
     const document =
         await uploadDocumentService({
-
-            ...validated,
-
-            uploadedById: user.id,
-
-            file: req.file,
-
+            title: req.body.title,
+            departmentId: req.body.departmentId,
+            uploadedById: req.user!.id,
+            file: req.file!,
         });
 
-    return res.status(201).json({
-
+    res.status(201).json({
         success: true,
-
-        message: "Document uploaded successfully.",
-
+        message: "Document uploaded successfully",
         document,
-
     });
+}
+export async function getDocumentsController(
+    req: Request,
+    res: Response
+) {
+    const documents = await getDocumentsService();
 
+    res.json({
+        success: true,
+        documents,
+    });
+}
+
+export async function getDocumentController(
+    req: Request,
+    res: Response
+) {
+    const id = req.params.id as string;
+    const document = await getDocumentService(id);
+
+    res.json({
+        success: true,
+        document,
+    });
+}
+
+export async function deleteDocumentController(
+    req: Request,
+    res: Response
+) {
+    const id = req.params.id as string;
+    await deleteDocumentService(id);
+
+    res.json({
+        success: true,
+        message: "Document deleted successfully",
+    });
+}
+export async function viewDocumentController(
+    req: Request,
+    res: Response
+) {
+    const id = req.params.id as string;
+    const document = await getDocumentService(id);
+
+    res.sendFile(path.resolve(document.filePath));
+}
+export async function downloadDocumentController(
+    req: Request,
+    res: Response
+) {
+    const id = req.params.id as string;
+    const document = await getDocumentService(id);
+
+    res.download(
+        path.resolve(document.filePath),
+        document.originalName
+    );
 }

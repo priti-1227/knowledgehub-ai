@@ -1,24 +1,28 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { randomUUID } from "crypto";
 
-const uploadPath = "uploads/documents";
+const uploadPath = "uploads";
 
-// Create folder if it doesn't exist
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-    destination(req, file, cb) {
+    destination(_, __, cb) {
         cb(null, uploadPath);
     },
 
-    filename(req, file, cb) {
-        const extension = path.extname(file.originalname);
+    filename(_, file, cb) {
+        const unique =
+            Date.now() +
+            "-" +
+            Math.round(Math.random() * 1e9);
 
-        cb(null, `${randomUUID()}${extension}`);
+        cb(
+            null,
+            unique + path.extname(file.originalname)
+        );
     },
 });
 
@@ -26,14 +30,22 @@ export const upload = multer({
     storage,
 
     limits: {
-        fileSize: 10 * 1024 * 1024, // 10 MB
+        fileSize: 20 * 1024 * 1024, //20MB
     },
 
-    fileFilter(req, file, cb) {
-        if (file.mimetype !== "application/pdf") {
-            return cb(new Error("Only PDF files are allowed."));
+    fileFilter(_, file, cb) {
+        const allowed = [
+            "application/pdf",
+
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+            "text/plain",
+        ];
+
+        if (allowed.includes(file.mimetype)) {
+            return cb(null, true);
         }
 
-        cb(null, true);
+        cb(new Error("Unsupported file"));
     },
 });
