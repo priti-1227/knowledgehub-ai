@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 
 import { createDepartmentSchema } from "./department.validation.js";
-import { createDepartmentService } from "./department.service.js";
-import { getDepartmentsService } from "./department.service.js";
+import {
+    createDepartmentService,
+    getDepartmentsService,
+    updateDepartmentService,
+    deleteDepartmentService,
+} from "./department.service.js";
 
 export async function createDepartment(
     req: Request,
@@ -36,4 +40,31 @@ export async function getDepartments(
 
     });
 
+}
+export async function updateDepartmentController(
+    req: Request<{ id: string }>,
+    res: Response
+) {
+    const department =
+        await updateDepartmentService(
+            req.params.id,
+            req.body
+        );
+
+    res.json({
+        success: true,
+        department,
+    });
+}
+
+export async function deleteDepartmentController(
+    req: Request<{ id: string }>,
+    res: Response
+) {
+    await deleteDepartmentService(req.params.id);
+
+    res.json({
+        success: true,
+        message: "Department deleted successfully.",
+    });
 }

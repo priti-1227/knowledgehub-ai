@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { createDepartment, getDepartments } from "./department.controller.js";
+import {
+    createDepartment,
+    getDepartments,
+    updateDepartmentController,
+    deleteDepartmentController,
+} from "./department.controller.js";
 import { authorize } from "@/middleware/authorize.js";
 import { authenticate } from "@/middleware/authenticate.js";
 
@@ -76,13 +81,23 @@ router.post(
  *         description: Unauthorized
  */
 router.get(
-
     "/",
-
     authenticate,
-
     getDepartments
+);
 
+router.put(
+    "/:id",
+    authenticate,
+    authorize("ADMIN"),
+    updateDepartmentController
+);
+
+router.delete(
+    "/:id",
+    authenticate,
+    authorize("ADMIN"),
+    deleteDepartmentController
 );
 
 export default router;

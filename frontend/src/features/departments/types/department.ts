@@ -11,6 +11,10 @@ export interface CreateDepartmentPayload {
     name: string;
     description?: string;
 }
+export interface UpdateDepartmentPayload
+    extends CreateDepartmentPayload {
+    id: string;
+}
 
 export interface DepartmentResponse {
     success: boolean;
