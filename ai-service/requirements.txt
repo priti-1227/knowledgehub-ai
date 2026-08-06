@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+pypdf
+python-docx
+langchain-text-splitters
+python-multipart

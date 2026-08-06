@@ -4,4 +4,21 @@ dist
 build
 coverage
 .vscode
-.DS_Store
+.DS_Store# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# ChromaDB local vector storage directory
+chroma_db/
+*.parquet
+
+# VS Code / Codespaces local settings
+.vscode/
+.devcontainer/
