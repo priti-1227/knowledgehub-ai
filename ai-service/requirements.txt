@@ -5,3 +5,5 @@ pypdf
 python-docx
 langchain-text-splitters
 python-multipart
+python-dotenv
+sentence-transformers
