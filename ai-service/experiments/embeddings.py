@@ -1,4 +1,5 @@
 from sentence_transformers import SentenceTransformer
+from sentence_transformers.util import cos_sim
 
 
 model = SentenceTransformer(
@@ -7,8 +8,8 @@ model = SentenceTransformer(
 
 
 sentences = [
-    "What is the work from home policy?",
     "Can employees work remotely?",
+    "What is the work from home policy?",
     "What is the company's leave policy?",
 ]
 
@@ -16,12 +17,22 @@ sentences = [
 embeddings = model.encode(sentences)
 
 
+print("\nVector dimensions:")
 for sentence, embedding in zip(sentences, embeddings):
-    print("\nTEXT:")
-    print(sentence)
+    print(f"{len(embedding)} - {sentence}")
 
-    print("\nVECTOR DIMENSION:")
-    print(len(embedding))
 
-    print("\nFIRST 5 VALUES:")
-    print(embedding[:5])
+print("\nSimilarity scores:\n")
+
+similarities = cos_sim(embeddings, embeddings)
+
+for i in range(len(sentences)):
+    for j in range(i + 1, len(sentences)):
+
+        print(
+            f"{similarities[i][j]:.4f}"
+            f"  |  "
+            f"{sentences[i]}"
+            f"  ↔  "
+            f"{sentences[j]}"
+        )
