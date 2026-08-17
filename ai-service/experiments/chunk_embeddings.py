@@ -1,6 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 # --------------------------------------------------
@@ -40,72 +39,37 @@ splitter = RecursiveCharacterTextSplitter(
 
 chunks = splitter.split_text(text)
 
+print("TOTAL CHUNKS:", len(chunks))
+
 
 # --------------------------------------------------
-# 3. Load embedding model
+# 3. Load BGE embedding model
 # --------------------------------------------------
 
 model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 
 
 # --------------------------------------------------
-# 4. Create embeddings for document chunks
+# 4. Generate embeddings for every chunk
 # --------------------------------------------------
 
-chunk_embeddings = model.encode(chunks)
-
-
-# --------------------------------------------------
-# 5. User question
-# --------------------------------------------------
-
-question = "Can employees work remotely?"
+embeddings = model.encode(chunks)
 
 
 # --------------------------------------------------
-# 6. Create embedding for question
+# 5. Display results
 # --------------------------------------------------
 
-question_embedding = model.encode([question])
+for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
 
+    print("\n" + "=" * 70)
+    print(f"CHUNK {i + 1}")
+    print("=" * 70)
 
-# --------------------------------------------------
-# 7. Calculate similarity
-# --------------------------------------------------
+    print(chunk)
 
-similarities = cosine_similarity(
-    question_embedding,
-    chunk_embeddings
-)[0]
+    print("\nVECTOR DIMENSION:")
+    print(len(embedding))
 
-
-# --------------------------------------------------
-# 8. Display similarity scores
-# --------------------------------------------------
-
-print("\nQUESTION:")
-print(question)
-
-print("\n" + "=" * 70)
-print("SEARCH RESULTS")
-print("=" * 70)
-
-for i, score in enumerate(similarities):
-    print(f"\nCHUNK {i + 1}")
-    print(f"SIMILARITY SCORE: {score:.4f}")
-    print(chunks[i])
-
-
-# --------------------------------------------------
-# 9. Find best matching chunk
-# --------------------------------------------------
-
-best_index = similarities.argmax()
-
-print("\n" + "=" * 70)
-print("BEST MATCH")
-print("=" * 70)
-
-print(f"CHUNK: {best_index + 1}")
-print(f"SCORE: {similarities[best_index]:.4f}")
-print("\n" + chunks[best_index])
+    print("\nFIRST 5 VECTOR VALUES:")
+    print(embedding[:5])

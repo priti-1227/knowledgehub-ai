@@ -30,7 +30,7 @@ the employee portal and approved by the reporting manager.
 
 
 # --------------------------------------------------
-# 2. Split document into chunks
+# 2. Split document
 # --------------------------------------------------
 
 splitter = RecursiveCharacterTextSplitter(
@@ -42,14 +42,14 @@ chunks = splitter.split_text(text)
 
 
 # --------------------------------------------------
-# 3. Load embedding model
+# 3. Load BGE
 # --------------------------------------------------
 
 model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 
 
 # --------------------------------------------------
-# 4. Create embeddings for document chunks
+# 4. Create embeddings for chunks
 # --------------------------------------------------
 
 chunk_embeddings = model.encode(chunks)
@@ -63,7 +63,7 @@ question = "Can employees work remotely?"
 
 
 # --------------------------------------------------
-# 6. Create embedding for question
+# 6. Create question embedding
 # --------------------------------------------------
 
 question_embedding = model.encode([question])
@@ -80,32 +80,30 @@ similarities = cosine_similarity(
 
 
 # --------------------------------------------------
-# 8. Display similarity scores
+# 8. Get Top-K results
+# --------------------------------------------------
+
+top_k = 2
+
+top_indices = similarities.argsort()[::-1][:top_k]
+
+
+# --------------------------------------------------
+# 9. Display Top-K chunks
 # --------------------------------------------------
 
 print("\nQUESTION:")
 print(question)
 
 print("\n" + "=" * 70)
-print("SEARCH RESULTS")
+print(f"TOP {top_k} RESULTS")
 print("=" * 70)
 
-for i, score in enumerate(similarities):
-    print(f"\nCHUNK {i + 1}")
-    print(f"SIMILARITY SCORE: {score:.4f}")
-    print(chunks[i])
+for rank, index in enumerate(top_indices, start=1):
 
+    print(f"\nRANK: {rank}")
+    print(f"CHUNK: {index + 1}")
+    print(f"SIMILARITY SCORE: {similarities[index]:.4f}")
 
-# --------------------------------------------------
-# 9. Find best matching chunk
-# --------------------------------------------------
-
-best_index = similarities.argmax()
-
-print("\n" + "=" * 70)
-print("BEST MATCH")
-print("=" * 70)
-
-print(f"CHUNK: {best_index + 1}")
-print(f"SCORE: {similarities[best_index]:.4f}")
-print("\n" + chunks[best_index])
+    print("\nCONTENT:")
+    print(chunks[index])
