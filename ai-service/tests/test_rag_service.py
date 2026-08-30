@@ -1,5 +1,7 @@
 from src.embeddings.embedder import Embedder
 from src.llm.mock_llm import MockLLMClient
+from src.llm.config import LLMConfig
+from src.llm.llm_factory import create_llm_client
 from src.prompts.prompt_builder import PromptBuilder
 from src.rag_service import RAGService
 from src.retrieval.context_builder import ContextBuilder
@@ -34,9 +36,16 @@ def test_rag_service():
         PromptBuilder()
     )
 
-    llm_client = (
-        MockLLMClient()
+    # llm_client = (
+    #     MockLLMClient()
+    # )
+    config = LLMConfig(
+        provider="local",
+        model="llama3.2:3b",
+        base_url="http://localhost:11434",
     )
+
+    llm_client = create_llm_client(config)
 
     # -----------------------------------------
     # Create RAG service
@@ -118,7 +127,8 @@ def test_rag_service():
 
     assert result["sources"]
 
-    assert (
-        "MOCK LLM RESPONSE"
-        in result["answer"]
-    )
+    if isinstance(llm_client, MockLLMClient):
+        assert (
+            "MOCK LLM RESPONSE"
+            in result["answer"]
+        )

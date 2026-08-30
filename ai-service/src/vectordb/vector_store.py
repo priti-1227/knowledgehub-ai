@@ -1,5 +1,6 @@
 from src.utils.database import get_connection
 import json
+from src.retrieval.filters import RetrievalFilter
 
 class PostgresVectorStore:
     """
@@ -74,6 +75,7 @@ class PostgresVectorStore:
         query_embedding: list[float],
         top_k: int = 5,
         similarity_threshold: float = 0.5,
+        retrieval_filter: RetrievalFilter | None = None,
     ) -> list[dict]:
 
         if top_k <= 0:
@@ -88,50 +90,127 @@ class PostgresVectorStore:
 
         embedding_text = str(query_embedding)
 
+        conditions = []
+
+        params = []
+
+        # ---------------------------------------------
+        # Active version filtering
+        # ---------------------------------------------
+
+        if (
+            retrieval_filter is None
+            or retrieval_filter.active_versions_only
+        ):
+            conditions.append(
+                "dv.status = 'active'"
+            )
+
+        # ---------------------------------------------
+        # Authorization filtering
+        # ---------------------------------------------
+
+        if retrieval_filter is not None:
+
+            access_conditions = []
+
+            if retrieval_filter.include_public:
+                access_conditions.append(
+                    "d.visibility = 'public'"
+                )
+
+            if retrieval_filter.department:
+                access_conditions.append(
+                    """
+                    (
+                        d.visibility = 'department'
+                        AND d.department = %s
+                    )
+                    """
+                )
+
+                params.append(
+                    retrieval_filter.department
+                )
+
+            if access_conditions:
+
+                conditions.append(
+                    "("
+                    + " OR ".join(access_conditions)
+                    + ")"
+                )
+
+        # ---------------------------------------------
+        # Similarity threshold
+        # ---------------------------------------------
+
+        conditions.append(
+            """
+            (
+                1 - (
+                    dc.embedding <=> %s::vector
+                )
+            ) >= %s
+            """
+        )
+
+        params.extend(
+            [
+                embedding_text,
+                similarity_threshold,
+            ]
+        )
+
+        where_clause = (
+            " AND ".join(conditions)
+        )
+
+        query = f"""
+            SELECT
+                dc.id,
+                dc.document_id,
+                dc.document_version_id,
+                dc.document_name,
+                dc.chunk_index,
+                dc.content,
+                dc.page_number,
+                dc.metadata,
+
+                1 - (
+                    dc.embedding <=> %s::vector
+                ) AS score
+
+            FROM document_chunks dc
+
+            JOIN document_versions dv
+                ON dc.document_version_id = dv.id
+
+            JOIN documents d
+                ON dc.document_id = d.id
+
+            WHERE {where_clause}
+
+            ORDER BY
+                dc.embedding <=> %s::vector
+
+            LIMIT %s
+        """
+
+        final_params = [
+            embedding_text,
+            *params,
+            embedding_text,
+            top_k,
+        ]
+
         with get_connection() as connection:
 
             with connection.cursor() as cursor:
 
                 cursor.execute(
-                    """
-                    SELECT
-                        dc.id,
-                        dc.document_id,
-                        dc.document_version_id,
-                        dc.document_name,
-                        dc.chunk_index,
-                        dc.content,
-                        dc.page_number,
-                        dc.metadata,
-
-                        1 - (
-                            dc.embedding <=> %s::vector
-                        ) AS score
-
-                    FROM document_chunks dc
-
-                    JOIN document_versions dv
-                        ON dc.document_version_id = dv.id
-
-                    WHERE dv.status = 'active'
-
-                    AND (
-                        1 - (
-                            dc.embedding <=> %s::vector
-                        )
-                    ) >= %s
-
-                    ORDER BY dc.embedding <=> %s::vector
-
-                    LIMIT %s
-                    """,
-                    (
-                        embedding_text,
-                        embedding_text,
-                        similarity_threshold,
-                        embedding_text,
-                        top_k,
-                    ),
+                    query,
+                    final_params,
                 )
 
                 rows = cursor.fetchall()

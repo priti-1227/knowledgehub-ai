@@ -1,5 +1,7 @@
 from src.embeddings.embedder import Embedder
 from src.vectordb.vector_store import PostgresVectorStore
+from src.retrieval.filters import RetrievalFilter
+from src.security.access_context import AccessContext
 
 from src.retrieval.models import RetrievalResult
 
@@ -20,11 +22,12 @@ class Retriever:
         self.vector_store = vector_store
 
     def retrieve(
-        self,
-        question: str,
-        top_k: int = 5,
-        similarity_threshold: float = 0.5,
-    ) -> list[RetrievalResult]:
+    self,
+    question: str,
+    top_k: int = 5,
+    similarity_threshold: float = 0.5,
+    access_context: AccessContext | None = None,
+) -> list[RetrievalResult]:
 
         if not question.strip():
             raise ValueError(
@@ -37,10 +40,31 @@ class Retriever:
             )
         )
 
+        retrieval_filter = None
+
+        if access_context is not None:
+
+            if access_context.is_admin:
+
+                retrieval_filter = RetrievalFilter(
+                    department=None,
+                    include_public=True,
+                )
+
+            else:
+
+                retrieval_filter = RetrievalFilter(
+                    department=
+                        access_context.department,
+
+                    include_public=True,
+                )
+
         results = self.vector_store.search(
             query_embedding=query_embedding,
             top_k=top_k,
             similarity_threshold=similarity_threshold,
+            retrieval_filter=retrieval_filter,
         )
 
         return [

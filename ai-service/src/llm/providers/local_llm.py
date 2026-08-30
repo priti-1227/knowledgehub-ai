@@ -1,12 +1,20 @@
-from src.llm.llm_client import LLMClient, LLMResponse
+import requests
+
+from src.llm.llm_client import (
+    LLMClient,
+    LLMResponse,
+)
 
 
 class LocalLLMClient(LLMClient):
     """
-    Adapter for a locally hosted LLM inference server.
+    Local LLM provider.
 
-    The rest of KnowledgeHub does not need to know
-    which local inference engine is being used.
+    Communicates with a local inference server
+    through HTTP.
+
+    The rest of KnowledgeHub does not depend
+    directly on Ollama.
     """
 
     def __init__(
@@ -24,6 +32,48 @@ class LocalLLMClient(LLMClient):
         system_prompt: str,
         user_prompt: str,
     ) -> LLMResponse:
-        raise NotImplementedError(
-            "Local LLM provider is not connected yet."
+
+        payload = {
+            "model": self.model,
+
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+            ],
+
+            "stream": False,
+        }
+
+        response = requests.post(
+            f"{self.base_url}/api/chat",
+            json=payload,
+            timeout=self.timeout,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        content = (
+            data
+            .get("message", {})
+            .get("content", "")
+            .strip()
+        )
+
+        if not content:
+            raise RuntimeError(
+                "Local LLM returned an empty response."
+            )
+
+        return LLMResponse(
+            content=content,
+            model=self.model,
+            provider="local",
         )

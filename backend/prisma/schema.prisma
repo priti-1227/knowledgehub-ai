@@ -6,58 +6,74 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  ADMIN
-  EMPLOYEE
-}
-
 model User {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   fullName  String
-  email     String   @unique
+  email     String     @unique
   password  String
-  role      Role @default(EMPLOYEE)
-
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  role      Role       @default(EMPLOYEE)
   documents Document[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Department {
-  id          String   @id @default(cuid())
-  name        String   @unique
+  id          String     @id @default(cuid())
+  name        String     @unique
   description String?
-
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   documents   Document[]
+}
+enum AiIndexStatus {
+  AI_PENDING
+  AI_PROCESSING
+  AI_READY
+  AI_FAILED
+}
+model Document {
+  id           String     @id @default(cuid())
+  title        String
+  originalName String
+  fileName     String
+  filePath     String
+  mimeType     String
+  fileSize     Int
+  version      Int        @default(1)
+  departmentId String
+  aiIndexStatus     AiIndexStatus @default(AI_PENDING)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  aiIndexError      String?
+
+  aiIndexedAt       DateTime?
+
+  aiRetryCount      Int           @default(0)
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isProcessed  Boolean    @default(false)
+  uploadedById String
+  department   Department @relation(fields: [departmentId], references: [id])
+  uploadedBy   User       @relation(fields: [uploadedById], references: [id])
 }
 
-model Document {
-  id String @id @default(cuid())
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model document_chunks {
+// }
 
-  title String
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model document_versions {
+// }
 
-  originalName String
-  fileName String
-  filePath String
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model documents {
+// }
 
-  mimeType String
-  fileSize Int
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model vector_test {
+// }
 
-  version Int @default(1)
-
-  isProcessed Boolean @default(false)
-
-  uploadedById String
-  departmentId String
-
-  uploadedBy User       @relation(fields: [uploadedById], references: [id])
-
-  department Department @relation(fields: [departmentId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  ADMIN
+  EMPLOYEE
 }

@@ -7,6 +7,9 @@ import { errorMiddleware } from "@/middleware/error.middleware.js";
 import documentRoutes from "@/modules/document/document.routes.js";
 import departmentRoutes from "@/modules/department/department.routes.js";
 import { setupSwagger } from "@/config/swagger.js";
+import aiRoutes from "@/routes/ai.routes.js";
+
+
 
 
 const app = express();
@@ -27,6 +30,7 @@ app.get("/api/health", (_, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/v1", aiRoutes);
 app.use(errorMiddleware);
 setupSwagger(app);
 export default app;
