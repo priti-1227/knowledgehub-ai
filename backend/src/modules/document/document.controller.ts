@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import path from "path";
 import { deleteDocumentService, getDocumentService, getDocumentsService, uploadDocumentService } from "./document.service.js";
-
+import {
+    queueDocumentForIndexing,
+} from "../../queues/ai-indexing.queue.js";
 export async function uploadDocumentController(
     req: Request,
     res: Response
@@ -13,6 +15,11 @@ export async function uploadDocumentController(
             uploadedById: req.user!.id,
             file: req.file!,
         });
+
+    // Start AI indexing without blocking upload response
+    await queueDocumentForIndexing(
+        document.id
+    );
 
     res.status(201).json({
         success: true,

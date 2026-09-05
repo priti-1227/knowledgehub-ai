@@ -13,6 +13,7 @@ from src.chunking.chunker import DocumentChunker
 from src.ingestion.document_repository import DocumentRepository
 from src.ingestion.ingest_service import IngestionService
 from src.ingestion.pdf_loader import PDFLoader
+from src.retrieval.reranker import Reranker
 
 
 @lru_cache(maxsize=1)

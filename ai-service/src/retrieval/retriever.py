@@ -4,6 +4,7 @@ from src.retrieval.filters import RetrievalFilter
 from src.security.access_context import AccessContext
 
 from src.retrieval.models import RetrievalResult
+from src.retrieval.reranker import Reranker
 
 
 class Retriever:
@@ -16,17 +17,20 @@ class Retriever:
         self,
         embedder: Embedder,
         vector_store: PostgresVectorStore,
+        reranker: Reranker | None = None,
     ):
 
         self.embedder = embedder
         self.vector_store = vector_store
+        self.reranker = reranker
 
     def retrieve(
-    self,
-    question: str,
-    top_k: int = 5,
-    similarity_threshold: float = 0.5,
-    access_context: AccessContext | None = None,
+        self,
+        question: str,
+        top_k: int = 5,
+        similarity_threshold: float = 0.5,
+        access_context=None,
+        candidate_k: int | None = None,
 ) -> list[RetrievalResult]:
 
         if not question.strip():
@@ -54,20 +58,34 @@ class Retriever:
             else:
 
                 retrieval_filter = RetrievalFilter(
-                    department=
-                        access_context.department,
-
+                    department=(
+                        access_context.department
+                    ),
                     include_public=True,
                 )
 
+        # If reranking is enabled, retrieve more
+        # candidates than the final top_k.
+        search_k = (
+            candidate_k
+            if candidate_k is not None
+            else (
+                max(top_k * 3, 10)
+                if self.reranker
+                else top_k
+            )
+        )
+
         results = self.vector_store.search(
             query_embedding=query_embedding,
-            top_k=top_k,
-            similarity_threshold=similarity_threshold,
+            top_k=search_k,
+            similarity_threshold=(
+                similarity_threshold
+            ),
             retrieval_filter=retrieval_filter,
         )
 
-        return [
+        retrieval_results = [
             RetrievalResult(
                 chunk_id=result["id"],
                 document_id=result["document_id"],
@@ -85,3 +103,13 @@ class Retriever:
             )
             for result in results
         ]
+
+        if self.reranker:
+
+            return self.reranker.rerank(
+                question=question,
+                results=retrieval_results,
+                top_k=top_k,
+            )
+
+        return retrieval_results[:top_k]

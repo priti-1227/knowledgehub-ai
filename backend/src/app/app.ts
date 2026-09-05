@@ -30,6 +30,7 @@ app.get("/api/health", (_, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/departments", departmentRoutes);
+
 app.use("/api/v1", aiRoutes);
 app.use(errorMiddleware);
 setupSwagger(app);

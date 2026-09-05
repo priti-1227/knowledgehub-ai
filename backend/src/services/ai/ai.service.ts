@@ -28,6 +28,8 @@ export class AIService {
                     signal: controller.signal,
                     headers: {
                         "Content-Type": "application/json",
+                        "X-Service-Api-Key":
+                            aiConfig.apiKey,
                         ...options.headers,
                     },
                 }

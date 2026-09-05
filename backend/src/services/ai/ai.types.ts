@@ -41,3 +41,10 @@ export interface AIIngestResponse {
     version_number?: number | null;
     chunks: number;
 }
+export interface RetryAIIndexingResponse {
+    status: string;
+    document_id?: number | null;
+    version_id?: number | null;
+    version_number?: number | null;
+    chunks: number;
+}

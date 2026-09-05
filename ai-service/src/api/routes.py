@@ -28,12 +28,17 @@ from src.api.dependencies import (
     get_ingestion_service,
     get_rag_service,
 )
+from src.api.security import (
+    verify_service_api_key,
+)
 
 
 router = APIRouter(
     prefix="/api/v1",
+    dependencies=[
+        Depends(verify_service_api_key),
+    ],
 )
-
 
 @router.get("/health")
 def health_check():

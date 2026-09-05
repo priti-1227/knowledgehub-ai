@@ -6,4 +6,6 @@ export const aiConfig = {
     timeoutMs: Number(
         process.env.AI_SERVICE_TIMEOUT_MS ?? 120000
     ),
+    apiKey:
+        process.env.AI_SERVICE_API_KEY ?? "",
 };

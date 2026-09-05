@@ -22,7 +22,11 @@ export async function uploadDocumentService(
         );
     }
 
-    return createDocument(data);
+    const document = await createDocument(data);
+
+
+
+    return document;
 }
 
 export async function getDocumentsService() {
