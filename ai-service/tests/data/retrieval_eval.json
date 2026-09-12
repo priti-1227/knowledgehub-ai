@@ -5,14 +5,28 @@
             "Work From Home Policy",
             "Remote Work Policy"
         ],
-        "should_answer": true
+        "should_answer": true,
+        "grounded": true,
+        "answer_status": "answered_with_conflict",
+        "conflict": {
+            "has_conflict": true,
+            "level": "partial",
+            "reason": "detail_conflict"
+        }
     },
     {
         "question": "How many days per week can employees work from home?",
         "expected_documents": [
             "Work From Home Policy"
         ],
-        "should_answer": true
+        "should_answer": true,
+        "grounded": true,
+        "answer_status": "answered",
+        "conflict": {
+            "has_conflict": false,
+            "level": "none",
+            "reason": "sources_consistent"
+        }
     },
     {
         "question": "Who approves remote work?",
@@ -20,6 +34,25 @@
             "Work From Home Policy",
             "Remote Work Policy"
         ],
-        "should_answer": true
+        "should_answer": true,
+        "grounded": true,
+        "answer_status": "answered",
+        "conflict": {
+            "has_conflict": false,
+            "level": "none",
+            "reason": "sources_consistent"
+        }
+    },
+    {
+        "question": "What is the maternity leave policy?",
+        "expected_documents": [],
+        "should_answer": false,
+        "grounded": false,
+        "answer_status": "not_found",
+        "conflict": {
+            "has_conflict": false,
+            "level": "none",
+            "reason": "insufficient_evidence"
+        }
     }
 ]

@@ -22,10 +22,12 @@ class LocalLLMClient(LLMClient):
         model: str,
         base_url: str,
         timeout: int = 120,
+        temperature: float = 0.0,
     ):
         self.model = model
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.temperature = temperature
 
     def generate(
         self,
@@ -48,6 +50,10 @@ class LocalLLMClient(LLMClient):
             ],
 
             "stream": False,
+            "options": {
+        "temperature": self.temperature,
+        "seed": 42,
+    },
         }
 
         response = requests.post(

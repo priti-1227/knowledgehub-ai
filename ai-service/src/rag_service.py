@@ -5,10 +5,22 @@ from src.retrieval.grounding import GroundingValidator
 from src.retrieval.retriever import Retriever
 from src.security.access_context import AccessContext
 
+from src.retrieval.evidence_verifier import (
+    EvidenceVerifier,
+)
+
+from src.retrieval.conflict_detector import (
+    ConflictDetector,
+    ConflictLevel,
+)
+
+from src.rag.models import AnswerStatus
+
 
 class RAGService:
     """
     Coordinates retrieval, grounding validation,
+    evidence verification, conflict detection,
     prompt construction, generation and source reporting.
     """
 
@@ -19,12 +31,16 @@ class RAGService:
         prompt_builder: PromptBuilder,
         llm_client: LLMClient,
         grounding_validator: GroundingValidator,
+        evidence_verifier: EvidenceVerifier,
+        conflict_detector: ConflictDetector,
     ):
         self.retriever = retriever
         self.context_builder = context_builder
         self.prompt_builder = prompt_builder
         self.llm_client = llm_client
         self.grounding_validator = grounding_validator
+        self.evidence_verifier = evidence_verifier
+        self.conflict_detector = conflict_detector
 
     def answer(
         self,
@@ -51,7 +67,7 @@ class RAGService:
         )
 
         # ------------------------------------------------
-        # 2. Validate whether evidence is strong enough
+        # 2. Grounding check
         # ------------------------------------------------
 
         grounding = self.grounding_validator.validate(
@@ -59,27 +75,102 @@ class RAGService:
         )
 
         if not grounding.can_answer:
-
             return {
                 "answer": (
                     "I could not find this information "
                     "in the available documents."
                 ),
+
                 "grounded": False,
-                "grounding_reason": grounding.reason,
-                "best_score": grounding.best_score,
+
+                "answer_status":
+                    AnswerStatus.NOT_FOUND,
+
+                "conflict": {
+                    "has_conflict": False,
+                    "level": "none",
+                    "reason": "no_evidence",
+                },
+
+                "grounding_reason":
+                    grounding.reason,
+
+                "best_score":
+                    grounding.best_score,
+
                 "model": None,
+
                 "provider": None,
+
                 "usage": {
                     "prompt_tokens": None,
                     "completion_tokens": None,
                     "total_tokens": None,
                 },
+
                 "sources": [],
             }
 
         # ------------------------------------------------
-        # 3. Build context
+        # 3. Evidence verification
+        # ------------------------------------------------
+
+        evidence = self.evidence_verifier.verify(
+            question=question,
+            results=results,
+        )
+
+        if not evidence.can_answer:
+            return {
+                "answer": (
+                    "I could not find this information "
+                    "in the available documents."
+                ),
+
+                "grounded": False,
+
+                "answer_status":
+                    AnswerStatus.NOT_FOUND,
+
+                "conflict": {
+                    "has_conflict": False,
+                    "level": "none",
+                    "reason": "insufficient_evidence",
+                },
+
+                "grounding_reason":
+                    evidence.reason,
+
+                "best_score": (
+                    results[0].score
+                    if results
+                    else None
+                ),
+
+                "model": None,
+
+                "provider": None,
+
+                "usage": {
+                    "prompt_tokens": None,
+                    "completion_tokens": None,
+                    "total_tokens": None,
+                },
+
+                "sources": [],
+            }
+
+        # ------------------------------------------------
+        # 4. Conflict detection
+        # ------------------------------------------------
+
+        conflict = self.conflict_detector.detect(
+            question=question,
+            results=results,
+        )
+
+        # ------------------------------------------------
+        # 5. Build context
         # ------------------------------------------------
 
         context = self.context_builder.build(
@@ -87,7 +178,7 @@ class RAGService:
         )
 
         # ------------------------------------------------
-        # 4. Build LLM prompt
+        # 6. Build prompt
         # ------------------------------------------------
 
         prompts = self.prompt_builder.build(
@@ -96,7 +187,7 @@ class RAGService:
         )
 
         # ------------------------------------------------
-        # 5. Generate answer
+        # 7. Generate answer
         # ------------------------------------------------
 
         llm_response = self.llm_client.generate(
@@ -105,7 +196,7 @@ class RAGService:
         )
 
         # ------------------------------------------------
-        # 6. Build citations/source metadata
+        # 8. Build source metadata
         # ------------------------------------------------
 
         sources = [
@@ -132,20 +223,67 @@ class RAGService:
         ]
 
         # ------------------------------------------------
-        # 7. Standard response
+        # 9. Decide answer status
+        # ------------------------------------------------
+
+        if (
+            conflict.level
+            == ConflictLevel.FULL
+        ):
+            answer_status = (
+                AnswerStatus.CONFLICT
+            )
+
+        elif (
+            conflict.level
+            == ConflictLevel.PARTIAL
+        ):
+            answer_status = (
+                AnswerStatus.ANSWERED_WITH_CONFLICT
+            )
+
+        else:
+            answer_status = (
+                AnswerStatus.ANSWERED
+            )
+
+        # ------------------------------------------------
+        # 10. Final response
         # ------------------------------------------------
 
         return {
-            "answer": llm_response.content,
-            "grounded": True,
+            "answer":
+                llm_response.content,
+
+            "grounded":
+                True,
+
+            "answer_status":
+                answer_status,
+
+            "conflict": {
+                "has_conflict":
+                    conflict.has_conflict,
+
+                "level":
+                    conflict.level.value,
+
+                "reason":
+                    conflict.reason,
+            },
+
             "grounding_reason":
                 grounding.reason,
+
             "best_score":
                 grounding.best_score,
+
             "model":
                 llm_response.model,
+
             "provider":
                 llm_response.provider,
+
             "usage": {
                 "prompt_tokens":
                     llm_response.prompt_tokens,
@@ -156,5 +294,7 @@ class RAGService:
                 "total_tokens":
                     llm_response.total_tokens,
             },
-            "sources": sources,
+
+            "sources":
+                sources,
         }

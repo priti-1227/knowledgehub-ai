@@ -32,6 +32,7 @@ def create_llm_client(
             model=config.model,
             base_url=config.base_url,
             timeout=config.timeout,
+            temperature=config.temperature,
         )
 
     raise ValueError(
