@@ -229,3 +229,126 @@ class PostgresVectorStore:
             }
             for row in rows
         ]
+    def keyword_search(
+        self,
+        query: str,
+        top_k: int = 10,
+        retrieval_filter=None,
+    ) -> list[dict]:
+
+        conditions = [
+            """
+            dc.search_vector @@ plainto_tsquery(
+                'english',
+                %s
+            )
+            """
+        ]
+
+        params = [query]
+
+        if retrieval_filter is None or (
+            retrieval_filter.active_versions_only
+        ):
+            conditions.append(
+                "dv.status = 'active'"
+            )
+
+        if retrieval_filter is not None:
+
+            access_conditions = []
+
+            if retrieval_filter.include_public:
+                access_conditions.append(
+                    "d.visibility = 'public'"
+                )
+
+            if retrieval_filter.department:
+                access_conditions.append(
+                    """
+                    (
+                        d.visibility = 'department'
+                        AND d.department = %s
+                    )
+                    """
+                )
+
+                params.append(
+                    retrieval_filter.department
+                )
+
+            if access_conditions:
+                conditions.append(
+                    "("
+                    + " OR ".join(access_conditions)
+                    + ")"
+                )
+
+        where_clause = " AND ".join(
+            conditions
+        )
+
+        sql = f"""
+            SELECT
+                dc.id,
+                dc.document_id,
+                dc.document_version_id,
+                dc.document_name,
+                dc.chunk_index,
+                dc.content,
+                dc.page_number,
+                dc.metadata,
+
+                ts_rank_cd(
+                    dc.search_vector,
+                    plainto_tsquery(
+                        'english',
+                        %s
+                    )
+                ) AS keyword_score
+
+            FROM document_chunks dc
+
+            JOIN document_versions dv
+                ON dc.document_version_id = dv.id
+
+            JOIN documents d
+                ON dc.document_id = d.id
+
+            WHERE {where_clause}
+
+            ORDER BY keyword_score DESC
+
+            LIMIT %s
+        """
+
+        final_params = [
+            query,
+            *params,
+            top_k,
+        ]
+
+        with get_connection() as connection:
+            with connection.cursor() as cursor:
+
+                cursor.execute(
+                    sql,
+                    final_params,
+                )
+
+                rows = cursor.fetchall()
+
+        return [
+            {
+                "id": row[0],
+                "document_id": row[1],
+                "document_version_id": row[2],
+                "document_name": row[3],
+                "chunk_index": row[4],
+                "content": row[5],
+                "page_number": row[6],
+                "metadata": row[7],
+                "keyword_score": float(row[8]),
+            }
+            for row in rows
+        ]

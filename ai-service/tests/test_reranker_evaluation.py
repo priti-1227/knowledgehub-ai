@@ -7,6 +7,7 @@ from src.retrieval.retriever import Retriever
 from src.vectordb.vector_store import (
     PostgresVectorStore,
 )
+from src.security.access_context import AccessContext
 
 
 DATASET_PATH = (
@@ -25,11 +26,17 @@ def load_dataset():
 
 
 def test_reranker_evaluation():
-
+    
     retriever = Retriever(
         embedder=Embedder(),
         vector_store=PostgresVectorStore(),
         reranker=Reranker(),
+    )
+    user = AccessContext(
+        user_id=101,
+        department="HR",
+        roles=("employee",),
+        is_admin=False,
     )
 
     dataset = load_dataset()
@@ -54,6 +61,7 @@ def test_reranker_evaluation():
             candidate_k=10,
 
             similarity_threshold=0.5,
+            access_context=user,
         )
 
         print("\n")

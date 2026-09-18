@@ -4,6 +4,9 @@ from src.retrieval.context_builder import ContextBuilder
 from src.retrieval.grounding import GroundingValidator
 from src.retrieval.retriever import Retriever
 from src.security.access_context import AccessContext
+from src.retrieval.diagnostics import (
+    build_retrieval_diagnostics,
+)
 
 from src.retrieval.evidence_verifier import (
     EvidenceVerifier,
@@ -221,6 +224,11 @@ class RAGService:
             }
             for result in results
         ]
+        retrieval_diagnostics = (
+        build_retrieval_diagnostics(
+            results
+        )
+    )
 
         # ------------------------------------------------
         # 9. Decide answer status
@@ -297,4 +305,7 @@ class RAGService:
 
             "sources":
                 sources,
+            "retrieval_diagnostics":
+    retrieval_diagnostics,
+    
         }
