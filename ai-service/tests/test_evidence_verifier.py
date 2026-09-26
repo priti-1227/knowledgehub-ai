@@ -7,7 +7,7 @@ def test_supported_and_unsupported_questions():
     rag = get_rag_service()
 
     user = AccessContext(
-        user_id=101,
+        user_id="test-user-101",
         department="HR",
         roles=("employee",),
         is_admin=False,

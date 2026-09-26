@@ -33,7 +33,7 @@ def test_reranker_evaluation():
         reranker=Reranker(),
     )
     user = AccessContext(
-        user_id=101,
+        user_id="test-user-101",
         department="HR",
         roles=("employee",),
         is_admin=False,

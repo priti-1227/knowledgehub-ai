@@ -10,6 +10,7 @@ import DepartmentsPage from "@/features/departments/pages/DepartmentsPage";
 import ChatPage from "@/features/chat/pages/ChatPage";
 import DocumentsPage from "@/features/documents/pages/DocumentsPage";
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+
           </Route>
         </Route>
 

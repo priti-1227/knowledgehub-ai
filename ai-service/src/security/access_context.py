@@ -8,7 +8,7 @@ class AccessContext:
     currently authenticated user.
     """
 
-    user_id: int
+    user_id: str
 
     department: str | None
 

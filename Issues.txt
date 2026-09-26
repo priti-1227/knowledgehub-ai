@@ -1,0 +1,174 @@
+1. what happen from frontend show documnet upload and in ai proccessing failed write code for it . 
+ex. {
+    "success": true,
+    "documents": [
+        {
+            "id": "cmui8jatu000018usysvev3us",
+            "title": "HR Remote Work Policy 2026",
+            "originalName": "HR Remote Work Policy 2026.pdf",
+            "fileName": "1790417808715-110261501.pdf",
+            "filePath": "uploads\\1790417808715-110261501.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 32430,
+            "version": 1,
+            "departmentId": "cmu8n87x100005wusa6nloxil",
+            "aiIndexStatus": "AI_PROCESSING",
+            "aiIndexError": null,
+            "aiIndexedAt": null,
+            "aiRetryCount": 0,
+            "createdAt": "2026-09-26T10:16:48.787Z",
+            "updatedAt": "2026-09-26T10:16:49.139Z",
+            "isProcessed": false,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmu8n87x100005wusa6nloxil",
+                "name": "HR"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        },
+        {
+            "id": "cmu8njofl00015wusadj67ts6",
+            "title": "remote-work-policy-test",
+            "originalName": "remote-work-policy-test.pdf",
+            "fileName": "1789838358822-908027299.pdf",
+            "filePath": "uploads\\1789838358822-908027299.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 30486,
+            "version": 1,
+            "departmentId": "cmu8n87x100005wusa6nloxil",
+            "aiIndexStatus": "AI_READY",
+            "aiIndexError": null,
+            "aiIndexedAt": "2026-09-19T17:19:30.712Z",
+            "aiRetryCount": 0,
+            "createdAt": "2026-09-19T17:19:18.897Z",
+            "updatedAt": "2026-09-19T17:19:30.714Z",
+            "isProcessed": true,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmu8n87x100005wusa6nloxil",
+                "name": "HR"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        },
+        {
+            "id": "cmto3bpkc0000ccusc1ckc8hm",
+            "title": "Employee Handbook 2026",
+            "originalName": "ch-3_Conditions_Loops_Iteration (2).pdf",
+            "fileName": "1788595070962-424605095.pdf",
+            "filePath": "uploads\\1788595070962-424605095.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 92830,
+            "version": 1,
+            "departmentId": "cmsbr2k5z0003m8usxffgb13d",
+            "aiIndexStatus": "AI_READY",
+            "aiIndexError": null,
+            "aiIndexedAt": "2026-09-05T07:58:05.582Z",
+            "aiRetryCount": 0,
+            "createdAt": "2026-09-05T07:57:51.276Z",
+            "updatedAt": "2026-09-05T07:58:05.583Z",
+            "isProcessed": true,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmsbr2k5z0003m8usxffgb13d",
+                "name": "hr-m"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        },
+        {
+            "id": "cmto2v5p800002gus4krljbnf",
+            "title": "Employee Handbook 2026",
+            "originalName": "ch2-Sampling_&_Population (1).pdf",
+            "fileName": "1788594298695-809463162.pdf",
+            "filePath": "uploads\\1788594298695-809463162.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 536458,
+            "version": 1,
+            "departmentId": "cmsbr2k5z0003m8usxffgb13d",
+            "aiIndexStatus": "AI_READY",
+            "aiIndexError": null,
+            "aiIndexedAt": "2026-09-05T07:45:05.640Z",
+            "aiRetryCount": 0,
+            "createdAt": "2026-09-05T07:44:59.036Z",
+            "updatedAt": "2026-09-05T07:45:05.641Z",
+            "isProcessed": true,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmsbr2k5z0003m8usxffgb13d",
+                "name": "hr-m"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        },
+        {
+            "id": "cmto2m5ab0001g0uskglczxoh",
+            "title": "Employee Handbook 2026",
+            "originalName": "ch1-Introduction of Machine Learning (1).pdf",
+            "fileName": "1788593878570-647744257.pdf",
+            "filePath": "uploads\\1788593878570-647744257.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 1240836,
+            "version": 1,
+            "departmentId": "cmsbr2k5z0003m8usxffgb13d",
+            "aiIndexStatus": "AI_READY",
+            "aiIndexError": null,
+            "aiIndexedAt": "2026-09-05T07:38:18.225Z",
+            "aiRetryCount": 0,
+            "createdAt": "2026-09-05T07:37:58.595Z",
+            "updatedAt": "2026-09-05T07:38:18.240Z",
+            "isProcessed": true,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmsbr2k5z0003m8usxffgb13d",
+                "name": "hr-m"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        },
+        {
+            "id": "cmsbwano80001ogusctk9899o",
+            "title": "Priti Resume",
+            "originalName": "Priti_Rathore_Software_Engineer (13).pdf",
+            "fileName": "1785680888401-805462029.pdf",
+            "filePath": "uploads\\1785680888401-805462029.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 158592,
+            "version": 1,
+            "departmentId": "cmsbnozh90001m8us37qco08v",
+            "aiIndexStatus": "AI_PENDING",
+            "aiIndexError": null,
+            "aiIndexedAt": null,
+            "aiRetryCount": 0,
+            "createdAt": "2026-08-02T14:28:08.408Z",
+            "updatedAt": "2026-08-02T14:28:08.408Z",
+            "isProcessed": false,
+            "uploadedById": "cmsbnkglq0000m8uss6x6levz",
+            "department": {
+                "id": "cmsbnozh90001m8us37qco08v",
+                "name": "IT"
+            },
+            "uploadedBy": {
+                "id": "cmsbnkglq0000m8uss6x6levz",
+                "fullName": "ADMIN",
+                "email": "admin@gmail.com"
+            }
+        }
+    ]
+}

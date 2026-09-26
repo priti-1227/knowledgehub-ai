@@ -12,7 +12,7 @@ def test_hr_user_can_access_hr_document():
     )
 
     user = AccessContext(
-        user_id=101,
+        user_id="test-user-101",
         department="HR",
         roles=("employee",),
     )
@@ -51,7 +51,7 @@ def test_engineering_user_cannot_access_hr_document():
     )
 
     user = AccessContext(
-        user_id=202,
+        user_id="test-user-202",
         department="Engineering",
         roles=("employee",),
     )

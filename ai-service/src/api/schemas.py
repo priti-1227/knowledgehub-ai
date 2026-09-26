@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from typing import Literal
 
 class ChatRequest(BaseModel):
     """
@@ -11,7 +11,7 @@ class ChatRequest(BaseModel):
         max_length=2000,
     )
 
-    user_id: int
+    user_id: str
 
     department: str | None = None
 
@@ -31,6 +31,16 @@ class ChatRequest(BaseModel):
         le=1.0,
     )
 
+class ConflictResponse(BaseModel):
+    has_conflict: bool
+
+    level: Literal[
+        "none",
+        "partial",
+        "full",
+    ]
+
+    reason: str
 
 class SourceResponse(BaseModel):
 
@@ -46,7 +56,24 @@ class SourceResponse(BaseModel):
 
     score: float
 
+class TokenUsageResponse(BaseModel):
+    prompt_tokens: int | None = None
 
+    completion_tokens: int | None = None
+
+    total_tokens: int | None = None
+class RetrievalDiagnosticResponse(BaseModel):
+    chunk_id: int | str
+
+    document_name: str
+
+    vector_score: float | None = None
+
+    rrf_score: float | None = None
+
+    reranker_score: float | None = None
+
+    page_number: int | None = None
 class ChatResponse(BaseModel):
 
     answer: str

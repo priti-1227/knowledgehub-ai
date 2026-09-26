@@ -14,11 +14,8 @@ from src.ingestion.document_repository import DocumentRepository
 from src.ingestion.ingest_service import IngestionService
 from src.ingestion.pdf_loader import PDFLoader
 from src.retrieval.reranker import Reranker
-from src.retrieval.evidence_verifier import (
-    EvidenceVerifier,
-)
-from src.retrieval.conflict_detector import (
-    ConflictDetector,
+from src.retrieval.evidence_analyzer import (
+    EvidenceAnalyzer,
 )
 
 
@@ -46,11 +43,8 @@ def get_rag_service() -> RAGService:
     llm_client = create_llm_client(
         config
     )
-    evidence_verifier = EvidenceVerifier(
-    llm_client=llm_client
-)
-    conflict_detector = ConflictDetector(
-    llm_client=llm_client
+    evidence_analyzer = EvidenceAnalyzer(
+    llm_client=llm_client,
 )
 
     return RAGService(
@@ -61,8 +55,7 @@ def get_rag_service() -> RAGService:
         grounding_validator=GroundingValidator(
             minimum_score=-100.0
         ),
-        evidence_verifier=evidence_verifier,
-        conflict_detector=conflict_detector,
+        evidence_analyzer=evidence_analyzer,
     )
 @lru_cache(maxsize=1)
 def get_ingestion_service() -> IngestionService:

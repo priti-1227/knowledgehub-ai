@@ -7,47 +7,57 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   fullName  String
-  email     String     @unique
+  email     String   @unique
   password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  role      Role       @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role     @default(EMPLOYEE)
+
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
   documents Document[]
+
+  @@index([departmentId])
 }
 
 model Department {
-  id          String     @id @default(cuid())
-  name        String     @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  documents   Document[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents Document[]
+  users     User[]
 }
+
 enum AiIndexStatus {
   AI_PENDING
   AI_PROCESSING
   AI_READY
   AI_FAILED
 }
+
 model Document {
-  id           String     @id @default(cuid())
-  title        String
-  originalName String
-  fileName     String
-  filePath     String
-  mimeType     String
-  fileSize     Int
-  version      Int        @default(1)
-  departmentId String
-  aiIndexStatus     AiIndexStatus @default(AI_PENDING)
+  id            String        @id @default(cuid())
+  title         String
+  originalName  String
+  fileName      String
+  filePath      String
+  mimeType      String
+  fileSize      Int
+  version       Int           @default(1)
+  departmentId  String
+  aiIndexStatus AiIndexStatus @default(AI_PENDING)
 
-  aiIndexError      String?
+  aiIndexError String?
 
-  aiIndexedAt       DateTime?
+  aiIndexedAt DateTime?
 
-  aiRetryCount      Int           @default(0)
+  aiRetryCount Int @default(0)
 
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

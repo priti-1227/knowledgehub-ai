@@ -1,0 +1,154 @@
+[
+  {
+    "id": "HR_DIRECT_001",
+    "category": "direct",
+    "question": "How many days per week can HR employees work remotely?",
+    "user_department": "HR",
+    "should_answer": true,
+    "expected_documents": [
+      "HR Remote Work Policy 2026"
+    ],
+    "expected_answer_any": [
+      "two days",
+      "2 days"
+    ]
+  },
+  {
+    "id": "HR_PARAPHRASE_001",
+    "category": "paraphrase",
+    "question": "How often am I allowed to work from home?",
+    "user_department": "HR",
+    "should_answer": true,
+    "expected_documents": [
+      "HR Remote Work Policy 2026"
+    ],
+    "expected_answer_any": [
+      "two days",
+      "2 days"
+    ]
+  },
+  {
+    "id": "HR_APPROVAL_001",
+    "category": "role_extraction",
+    "question": "Who gives permission for remote work?",
+    "user_department": "HR",
+    "should_answer": true,
+    "expected_documents": [
+      "HR Remote Work Policy 2026"
+    ],
+    "expected_answer_any": [
+      "reporting manager",
+      "manager"
+    ]
+  },
+  {
+    "id": "HR_TYPO_001",
+    "category": "typo",
+    "question": "who aproves remtoe work?",
+    "user_department": "HR",
+    "should_answer": true,
+    "expected_documents": [
+      "HR Remote Work Policy 2026"
+    ],
+    "expected_answer_any": [
+      "reporting manager",
+      "manager"
+    ]
+  },
+  {
+    "id": "IT_DIRECT_001",
+    "category": "direct",
+    "question": "What is required to use the VPN?",
+    "user_department": "IT",
+    "should_answer": true,
+    "expected_documents": [
+      "IT VPN Access SOP"
+    ],
+    "expected_answer_any": [
+      "multi-factor authentication",
+      "mfa"
+    ]
+  },
+  {
+    "id": "IT_IDENTIFIER_001",
+    "category": "exact_identifier",
+    "question": "What does SOP-IT-017 say about VPN access?",
+    "user_department": "IT",
+    "should_answer": true,
+    "expected_documents": [
+      "IT VPN Access SOP"
+    ],
+    "expected_answer_any": [
+      "vpn"
+    ]
+  },
+  {
+    "id": "FIN_DIRECT_001",
+    "category": "direct",
+    "question": "What is the daily meal reimbursement limit?",
+    "user_department": "Finance",
+    "should_answer": true,
+    "expected_documents": [
+      "Finance Expense Reimbursement Policy"
+    ],
+    "expected_answer_any": [
+      "1,200",
+      "1200"
+    ]
+  },
+  {
+    "id": "FIN_PARAPHRASE_001",
+    "category": "paraphrase",
+    "question": "How long do I have to submit an expense claim?",
+    "user_department": "Finance",
+    "should_answer": true,
+    "expected_documents": [
+      "Finance Expense Reimbursement Policy"
+    ],
+    "expected_answer_any": [
+      "30 days"
+    ]
+  },
+  {
+    "id": "AUTH_HR_FINANCE_001",
+    "category": "authorization",
+    "question": "What is the meal reimbursement limit?",
+    "user_department": "HR",
+    "should_answer": false,
+    "expected_documents": [],
+    "forbidden_documents": [
+      "Finance Expense Reimbursement Policy"
+    ],
+    "expected_answer_any": []
+  },
+  {
+    "id": "AUTH_IT_HR_001",
+    "category": "authorization",
+    "question": "How many remote work days are allowed?",
+    "user_department": "IT",
+    "should_answer": false,
+    "expected_documents": [],
+    "forbidden_documents": [
+      "HR Remote Work Policy 2026"
+    ],
+    "expected_answer_any": []
+  },
+  {
+    "id": "UNSUPPORTED_001",
+    "category": "unsupported",
+    "question": "What is the maternity leave duration?",
+    "user_department": "HR",
+    "should_answer": false,
+    "expected_documents": [],
+    "expected_answer_any": []
+  },
+  {
+    "id": "UNSUPPORTED_002",
+    "category": "unsupported",
+    "question": "Does the company provide free gym membership?",
+    "user_department": "HR",
+    "should_answer": false,
+    "expected_documents": [],
+    "expected_answer_any": []
+  }
+]

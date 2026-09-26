@@ -1,6 +1,6 @@
 export interface AIChatRequest {
     question: string;
-    user_id: number;
+    user_id: string;
     department?: string | null;
     roles: string[];
     is_admin: boolean;
@@ -19,14 +19,26 @@ export interface AISource {
 
 export interface AIChatResponse {
     answer: string;
+
     grounded: boolean;
+
+    answer_status: AnswerStatus;
+
+    conflict?: AIConflict;
+
     grounding_reason: string;
-    best_score: number | null;
-    model: string | null;
-    provider: string | null;
+
+    best_score:
+        number | null;
+
+    model:
+        string | null;
+
+    provider:
+        string | null;
+
     sources: AISource[];
 }
-
 
 export interface AIIngestRequest {
     file_path: string;
@@ -47,4 +59,19 @@ export interface RetryAIIndexingResponse {
     version_id?: number | null;
     version_number?: number | null;
     chunks: number;
+}
+export type AnswerStatus =
+    | "answered"
+    | "answered_with_conflict"
+    | "conflict"
+    | "not_found";
+export interface AIConflict {
+    has_conflict: boolean;
+
+    level:
+        | "none"
+        | "partial"
+        | "full";
+
+    reason: string;
 }

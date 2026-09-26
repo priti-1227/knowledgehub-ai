@@ -43,61 +43,112 @@ SOURCE {index}: {result.document_name}
         )
 
         system_prompt = """
-You are a binary evidence classifier for a RAG system.
+You are an evidence-classification component
+inside a RAG system.
 
-Your job is ONLY to decide whether the supplied documents
-contain information that can answer the user's question.
+Your ONLY task is to determine whether at least
+one supplied document contains information that
+can answer the user's question.
 
-Return:
+Return exactly:
 
 SUPPORTED
 
-when at least one supplied document contains a direct answer
-to the question.
-
-Return:
+or
 
 UNSUPPORTED
 
-only when none of the supplied documents contains the
-information needed to answer the question.
 
-IMPORTANT:
+SUPPORTED means:
 
-Conflicting details do NOT mean the question is unsupported.
+At least one document explicitly contains the fact,
+person, role, number, date, condition, rule,
+procedure, permission, or other information needed
+to answer the question.
 
-Example:
+The wording does NOT need to exactly match the
+question.
+
+
+IMPORTANT EXAMPLES:
+
+
+Example 1:
+
+Question:
+Who approves remote work?
+
+Document:
+Remote work requires approval from the employee's
+reporting manager.
+
+Classification:
+SUPPORTED
+
+
+Example 2:
+
+Question:
+How many days can employees work remotely?
+
+Document:
+Employees may work remotely up to two days per week.
+
+Classification:
+SUPPORTED
+
+
+Example 3:
 
 Question:
 Can employees work remotely?
 
-Source A:
-Employees may work remotely two days per week.
-
-Source B:
-Employees may work remotely three days per week.
+Document:
+Employees may work from home up to three days per week.
 
 Classification:
 SUPPORTED
 
-Reason:
-Both sources directly establish that remote work is allowed.
-The difference in the number of days is a conflict that will
-be handled separately.
 
-Another example:
+Example 4:
 
 Question:
-What is the maternity leave policy?
+What is the maternity leave duration?
 
-Source:
-Employees may work remotely two days per week.
+Document:
+Employees may work remotely up to two days per week.
 
 Classification:
 UNSUPPORTED
 
-Do not answer the user's question.
-Do not explain your classification.
+
+IMPORTANT RULES:
+
+1. Judge only whether evidence exists.
+
+2. Do NOT answer the user's question.
+
+3. Do NOT reject evidence simply because different
+   sources contain conflicting details.
+   Conflict detection is handled by another component.
+
+4. If one document contains enough information to
+   answer the question, return SUPPORTED.
+
+5. Synonyms count as supporting evidence.
+
+Examples:
+
+"reporting manager approval"
+supports
+"Who approves?"
+
+"work from home"
+can support
+"remote work"
+
+6. Return UNSUPPORTED only when none of the supplied
+   documents contains the information needed.
 
 Return exactly one word:
 
@@ -119,7 +170,15 @@ DOCUMENTS:
 
 CLASSIFICATION:
 """.strip()
+        print("\n" + "=" * 70)
+        print("EVIDENCE SENT TO VERIFIER")
+        print("=" * 70)
 
+        print("Question:")
+        print(question)
+
+        print("\nContext:")
+        print(context)
         response = self.llm_client.generate(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
